@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "LCD.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,71 +56,6 @@ static void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN 0 */
 
-#define MDATA 0x01
-#define MCMD 0x00
-
-void LCD_init();
-void LCD_Write_Byte(uint8_t data, uint8_t mode);
-void LCD_Write_data(uint8_t data);
-void LCD_Write_cmd(uint8_t data);
-void LCD_Print(char *str);
-
-void LCD_init() {
-	HAL_Delay(50);
-	LCD_Write_cmd(0x38);	// Function set (8-bit interface, 2 lines, 5*7 Pixels)
-	HAL_Delay(5);
-	LCD_Write_cmd(0x0C);	// Make cursor invisible
-	HAL_Delay(5);
-	LCD_Write_cmd(0x01);	// Clear Screen
-	HAL_Delay(5);
-	LCD_Write_cmd(0x06);	// Text L->R
-	HAL_Delay(5);
-};
-
-void LCD_Print(char *str) {
-	while(*str) {
-		LCD_Write_data(*str++);
-	}
-}
-
-void LCD_Write_Byte(uint8_t data, uint8_t mode) {
-	if (mode == 0x01) {
-		//data
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);	// RS=1
-		
-	} else if (mode == 0x00) {
-		//cmd
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);	// RS=0
-	}
-	
-	// D0-D7
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, (data & 0x01)?1:0);	// 0000 0001
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, (data & 0x02)?1:0);	// 0000 0010
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, (data & 0x04)?1:0);	// 0000 0100
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, (data & 0x08)?1:0);	// 0000 1000
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, (data & 0x10)?1:0);	// 0001 0000
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, (data & 0x20)?1:0);	// 0010 0000
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, (data & 0x40)?1:0);	// 0100 0000
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, (data & 0x80)?1:0);	// 1000 0000
-	
-	// Enable
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 1);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, 0);
-	HAL_Delay(1);
-}
-
-void LCD_Write_data(uint8_t data) {
-	LCD_Write_Byte(data, 1);
-}
-
-void LCD_Write_cmd(uint8_t data) {
-	LCD_Write_Byte(data, 0);
-}
-
-
 /* USER CODE END 0 */
 
 /**
@@ -131,7 +66,20 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	// Config LCD struct
+	myLCD.PORT_DATA = GPIOA;
+	myLCD.PORT_R = GPIOB;
+	myLCD.D0 = GPIO_PIN_0;
+	myLCD.D1 = GPIO_PIN_1;
+	myLCD.D2 = GPIO_PIN_2;
+	myLCD.D3 = GPIO_PIN_3;
+	myLCD.D4 = GPIO_PIN_4;
+	myLCD.D5 = GPIO_PIN_5;
+	myLCD.D6 = GPIO_PIN_6;
+	myLCD.D7 = GPIO_PIN_7;
+	myLCD.RS = GPIO_PIN_0;
+	myLCD.RW = GPIO_PIN_1;
+	myLCD.E = GPIO_PIN_10;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -153,7 +101,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);	// RW=0
   LCD_init();
 	LCD_Print("VO QUANG VINH");
 	
