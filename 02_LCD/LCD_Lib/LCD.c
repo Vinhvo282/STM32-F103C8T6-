@@ -2,7 +2,7 @@
 
 LCD myLCD;
 
-void LCD_init(LCD *mLCD) {
+void LCD_init(void) {
 	HAL_GPIO_WritePin(myLCD.PORT_R, myLCD.RW, 0);
 	HAL_Delay(50);
 	LCD_Write_cmd(0x38);	// Function set (8-bit interface, 2 lines, 5*7 Pixels)
@@ -15,7 +15,7 @@ void LCD_init(LCD *mLCD) {
 	HAL_Delay(5);
 };
 
-void LCD_Print(char *str) {
+void LCD_Print(const char *str) {
 	while(*str) {
 		LCD_Write_data(*str++);
 	}

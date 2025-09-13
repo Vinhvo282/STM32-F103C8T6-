@@ -28,11 +28,11 @@ typedef struct {
 }LCD;
 
 extern LCD myLCD;
-void LCD_init();
+void LCD_init(void);
 void LCD_Write_Byte(uint8_t data, uint8_t mode);
 void LCD_Write_data(uint8_t data);
 void LCD_Write_cmd(uint8_t data);
-void LCD_Print(char *str);
+void LCD_Print(const char *str);
 
 #endif
 
